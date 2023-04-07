@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 18:35:04
-LastEditTime: 2023-04-07 16:04:36
+LastEditTime: 2023-04-07 18:03:00
 LastEditors: ViolinSolo
 Description: entry program
 FilePath: /zero-cost-proxies/alethiometer/zc_proxy.py
@@ -36,7 +36,7 @@ def copynet(self, bn):
     return net
 
 
-def calc_zc_vals(net_orig, trainloader, device, metric_names:list, loss_fn=F.cross_entropy):
+def calc_vals(net_orig, trainloader, device, metric_names:list, loss_fn=F.cross_entropy):
 
     if not hasattr(net_orig, 'get_prunable_copy'):
         net_orig.get_prunable_copy = types.MethodType(copynet, net_orig)
@@ -77,11 +77,11 @@ def calc_zc_vals(net_orig, trainloader, device, metric_names:list, loss_fn=F.cro
     return metric_vals
 
 
-def calc_zc_metrics(metrics: list, model: nn.Module, train_queue: D.DataLoader, n_classes: int, device: torch.device):
+def calc_zc_metrics(metrics: list, model: nn.Module, train_queue: D.DataLoader, n_classes: int, device: torch.device, loss_fn=F.cross_entropy):
     """
     Purpose: metrics
     """
+    mt_vals = calc_vals(net_orig=model, trainloader=train_queue, device=device, metric_names=metrics, loss_fn=loss_fn)
 
-    if not hasattr(model, 'get_prunable_copy'):
-        model.get_prunable_copy = types.MethodType(copynet, model)
+    return mt_vals
 # end def

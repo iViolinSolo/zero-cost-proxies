@@ -1,14 +1,13 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 14:16:23
-LastEditTime: 2023-04-07 16:02:46
+LastEditTime: 2023-04-07 18:06:05
 LastEditors: ViolinSolo
 Description: synflow from pruners/measures/synflow.py
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/synflow.py
 '''
 
 import torch
-import torch.nn as nn
 from . import metric
 from ..utils import get_layer_metric_array
 
