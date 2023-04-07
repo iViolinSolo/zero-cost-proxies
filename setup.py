@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 16:02:54
-LastEditTime: 2023-04-07 17:54:34
+LastEditTime: 2023-04-07 18:47:40
 LastEditors: ViolinSolo
 Description: package setup file.
 FilePath: /zero-cost-proxies/setup.py
@@ -30,6 +30,7 @@ VERSION = None
 
 try:
     import torch
+    import torchvision
 except ImportError:
     print('PyTorch not found! please install torch/torchvision before proceeding to install the alethiometer package.')
     exit(1)
@@ -44,7 +45,7 @@ except ImportError:
 # What packages are required for this module to be executed?
 REQUIRED = [
     # 'git-python',
-    'h5py>=2.10.0',
+    # 'h5py>=2.10.0',
     # 'jupyter>=1.0.0',
     # 'matplotlib>=3.2.1',
     # 'nas-bench-201==2.0',
@@ -52,9 +53,10 @@ REQUIRED = [
     # 'prettytable>=2.0.0',
     # 'pytorch-ignite>=0.3.0',
     # 'pytorchcv>=0.0.58',
-    'scikit-learn>=0.23.2',
-    'scipy>=1.4.1',
-    'tqdm>=4.46.0'
+    # 'scikit-learn>=0.23.2',
+    # 'scipy>=1.4.1',
+    # 'tqdm>=4.46.0'
+    'Pillow>=4',
 ]
 
 # What packages are optional?
