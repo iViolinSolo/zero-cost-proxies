@@ -1,9 +1,9 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 18:43:32
-LastEditTime: 2023-04-07 18:53:56
+LastEditTime: 2023-04-07 19:02:07
 LastEditors: ViolinSolo
-Description: dataset file from foresight/dataset.py
+Description: dataset file from foresight/dataset.py, modified and update with more fns.
 FilePath: /zero-cost-proxies/alethiometer/datasets/dataset.py
 '''
 
@@ -14,8 +14,12 @@ from torchvision import transforms
 
 from .imagenet16 import *
 
+DATASET_SUPPORTED = ['cifar10', 'cifar100', 'svhn', 'ImageNet16-120', 'ImageNet1k']
 
-def get_cifar_dataloaders(train_batch_size, test_batch_size, dataset, num_workers, resize=None, datadir='_dataset'):
+def get_cifar_dataloaders(train_batch_size, test_batch_size, dataset, num_workers, resize=None, datadir='_dataset', skip_download_check=False):
+
+    if dataset not in DATASET_SUPPORTED:
+        raise ValueError(f'Check dataset name! "{dataset}" not supported.')
 
     if 'ImageNet16' in dataset:
         mean = [x / 255 for x in [122.68, 116.66, 104.01]]
@@ -54,11 +58,11 @@ def get_cifar_dataloaders(train_batch_size, test_batch_size, dataset, num_worker
     ])
 
     if dataset == 'cifar10':
-        train_dataset = CIFAR10(datadir, True, train_transform, download=True)
-        test_dataset = CIFAR10(datadir, False, test_transform, download=True)
+        train_dataset = CIFAR10(datadir, True, train_transform, download=(not skip_download_check))
+        test_dataset = CIFAR10(datadir, False, test_transform, download=(not skip_download_check))
     elif dataset == 'cifar100':
-        train_dataset = CIFAR100(datadir, True, train_transform, download=True)
-        test_dataset = CIFAR100(datadir, False, test_transform, download=True)
+        train_dataset = CIFAR100(datadir, True, train_transform, download=(not skip_download_check))
+        test_dataset = CIFAR100(datadir, False, test_transform, download=(not skip_download_check))
     elif dataset == 'svhn':
         train_dataset = SVHN(datadir, split='train', transform=train_transform, download=True)
         test_dataset = SVHN(datadir, split='test', transform=test_transform, download=True)
