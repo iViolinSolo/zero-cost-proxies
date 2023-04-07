@@ -1,10 +1,10 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 18:48:20
-LastEditTime: 2023-04-07 18:48:21
+LastEditTime: 2023-04-07 18:54:22
 LastEditors: ViolinSolo
-Description: 
-FilePath: /zero-cost-proxies/alethiometer/h5py_dataset.py
+Description: h5py_dataset file from foresight/h5py_dataset.py
+FilePath: /zero-cost-proxies/alethiometer/datasets/h5py_dataset.py
 '''
 # Copyright 2021 Samsung Electronics Co., Ltd.
 #

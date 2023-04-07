@@ -1,10 +1,10 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 18:43:32
-LastEditTime: 2023-04-07 18:51:07
+LastEditTime: 2023-04-07 18:53:56
 LastEditors: ViolinSolo
-Description: 
-FilePath: /zero-cost-proxies/alethiometer/dataset.py
+Description: dataset file from foresight/dataset.py
+FilePath: /zero-cost-proxies/alethiometer/datasets/dataset.py
 '''
 
 from torch.utils.data import DataLoader

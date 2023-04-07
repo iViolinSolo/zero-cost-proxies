@@ -1,10 +1,10 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 18:44:26
-LastEditTime: 2023-04-07 18:44:27
+LastEditTime: 2023-04-07 18:54:33
 LastEditors: ViolinSolo
-Description: 
-FilePath: /zero-cost-proxies/alethiometer/imagenet16.py
+Description: imagenet16 file from foresight/imagenet16.py
+FilePath: /zero-cost-proxies/alethiometer/datasets/imagenet16.py
 '''
 ##################################################
 # Copyright (c) Xuanyi Dong [GitHub D-X-Y], 2019 #
