@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 16:02:54
-LastEditTime: 2023-04-07 18:47:40
+LastEditTime: 2023-04-07 19:03:59
 LastEditors: ViolinSolo
 Description: package setup file.
 FilePath: /zero-cost-proxies/setup.py
@@ -45,7 +45,7 @@ except ImportError:
 # What packages are required for this module to be executed?
 REQUIRED = [
     # 'git-python',
-    # 'h5py>=2.10.0',
+    'h5py>=2.10.0',
     # 'jupyter>=1.0.0',
     # 'matplotlib>=3.2.1',
     # 'nas-bench-201==2.0',
