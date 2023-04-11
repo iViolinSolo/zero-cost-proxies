@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 18:35:04
-LastEditTime: 2023-04-07 18:03:00
+LastEditTime: 2023-04-11 13:11:30
 LastEditors: ViolinSolo
 Description: entry program
 FilePath: /zero-cost-proxies/alethiometer/zc_proxy.py
@@ -77,7 +77,7 @@ def calc_vals(net_orig, trainloader, device, metric_names:list, loss_fn=F.cross_
     return metric_vals
 
 
-def calc_zc_metrics(metrics: list, model: nn.Module, train_queue: D.DataLoader, n_classes: int, device: torch.device, loss_fn=F.cross_entropy):
+def calc_zc_metrics(metrics: list, model: nn.Module, train_queue: D.DataLoader, device: torch.device, loss_fn=F.cross_entropy):
     """
     Purpose: metrics
     """
