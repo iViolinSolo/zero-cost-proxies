@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 18:35:04
-LastEditTime: 2023-04-11 13:49:23
+LastEditTime: 2023-04-11 17:57:53
 LastEditors: ViolinSolo
 Description: entry program
 FilePath: /zero-cost-proxies/alethiometer/zc_proxy.py
@@ -89,8 +89,13 @@ def calc_zc_metrics(metrics: list, model: nn.Module, train_queue: D.DataLoader, 
 
     def sum_arr(arr):
         sum = 0.
-        for i in range(len(arr)):
-            sum += torch.sum(arr[i])
+        if hasattr(arr, '__len__'):  # ignore some cases like str or tuple.
+            for i in range(len(arr)):
+                val = arr[i]
+                val = val if type(val) is torch.Tensor else torch.tensor(val)
+                sum += torch.sum(val)
+        else:
+            sum = arr
         return sum.item()
     
     results = {}

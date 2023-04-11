@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 19:25:08
-LastEditTime: 2023-04-11 13:59:24
+LastEditTime: 2023-04-11 16:52:16
 LastEditors: ViolinSolo
 Description: Test zc-proxies.
 FilePath: /zero-cost-proxies/tests/test_zc.py
@@ -44,7 +44,7 @@ def test_zc_proxies():
     train_loader, test_loader = get_cifar_dataloaders(64, 64, 'cifar10', 2)
 
     from alethiometer import calc_zc_metrics
-    mts = ['snip', 'grasp', 'grad_norm', 'synflow']
+    mts = ['snip', 'grasp', 'grad_norm', 'synflow', 'nwot', 'lnwot']
     results = calc_zc_metrics(metrics=mts, model=net, train_queue=train_loader, device=device, aggregate=True)
     print(results)
 

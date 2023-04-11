@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-11 15:15:33
-LastEditTime: 2023-04-11 16:42:08
+LastEditTime: 2023-04-11 17:57:40
 LastEditors: ViolinSolo
 Description: naswot function to calculate the zc proxy
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/naswot.py
@@ -54,9 +54,8 @@ def compute_naswot(net, inputs, targets, loss_fn, split_data=1, layerwise=False,
             matrix = K + K2
 
             K_layer_names.append(module.alias)
+            nonlocal K_mat
             K_mat = K_mat + matrix
-            
-        K_mat_logdet = safe_hooklogdet(K_mat.cpu().numpy())
 
 
     # register forward hook fn
@@ -76,4 +75,5 @@ def compute_naswot(net, inputs, targets, loss_fn, split_data=1, layerwise=False,
     if layerwise:
         return (K_mats, K_mats_logdet) if return_Kmats else K_mats_logdet
     else:
+        K_mat_logdet = safe_hooklogdet(K_mat.cpu().numpy())
         return (K_mat, K_mat_logdet) if return_Kmats else K_mat_logdet
