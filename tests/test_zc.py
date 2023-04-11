@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 19:25:08
-LastEditTime: 2023-04-11 13:09:09
+LastEditTime: 2023-04-11 13:49:30
 LastEditors: ViolinSolo
 Description: Test zc-proxies.
 FilePath: /zero-cost-proxies/tests/test_zc.py
@@ -39,7 +39,16 @@ def test_zc_proxies():
     net = models.densenet161()
     net.to(device)
 
-    from alethiometer.zc_proxy import calc_zc_metrics
+    # setup dataloader
+    from alethiometer import get_cifar_dataloaders
+    train_loader, test_loader = get_cifar_dataloaders(64, 64, 'cifar10', 2)
+
+    from alethiometer import calc_zc_metrics
+    mts = ['snip', 'grasp', 'grad_norm', 'synflow']
+    results = calc_zc_metrics(metrics=mts, model=net, train_queue=train_loader, device=device)
+    print(results)
+
 
 if __name__ == "__main__":
     test_dataloader()
+    test_zc_proxies()

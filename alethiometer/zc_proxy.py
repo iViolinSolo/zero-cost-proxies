@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 18:35:04
-LastEditTime: 2023-04-11 13:11:30
+LastEditTime: 2023-04-11 13:49:23
 LastEditors: ViolinSolo
 Description: entry program
 FilePath: /zero-cost-proxies/alethiometer/zc_proxy.py
@@ -56,7 +56,7 @@ def calc_vals(net_orig, trainloader, device, metric_names:list, loss_fn=F.cross_
         try:
             for mt_name in metric_names:
                 if mt_name not in metric_vals:
-                    val = M.calc_measure(mt_name, net_orig, device, inputs, targets, loss_fn=loss_fn, split_data=ds)
+                    val = M.calc_metric(mt_name, net_orig, device, inputs, targets, loss_fn=loss_fn, split_data=ds)
                     metric_vals[mt_name] = val
 
             done = True
@@ -77,11 +77,25 @@ def calc_vals(net_orig, trainloader, device, metric_names:list, loss_fn=F.cross_
     return metric_vals
 
 
-def calc_zc_metrics(metrics: list, model: nn.Module, train_queue: D.DataLoader, device: torch.device, loss_fn=F.cross_entropy):
+def calc_zc_metrics(metrics: list, model: nn.Module, train_queue: D.DataLoader, device: torch.device, loss_fn=F.cross_entropy, aggregate=True):
     """
-    Purpose: metrics
+    Purpose: metrics calculation entry.
+    @param: train_queue: train dataset dataloader.
+    @param: aggregate: whether return original layerwise value, when true, return processed aggregated value.
+
+    @return: dict of values, key is metric name of @params metrics, value is the calculated zcmetric result, 
     """
     mt_vals = calc_vals(net_orig=model, trainloader=train_queue, device=device, metric_names=metrics, loss_fn=loss_fn)
 
-    return mt_vals
+    def sum_arr(arr):
+        sum = 0.
+        for i in range(len(arr)):
+            sum += torch.sum(arr[i])
+        return sum.item()
+    
+    results = {}
+    for k, v in mt_vals.items():
+        results[k] = v if not aggregate else sum_arr(v)
+
+    return results
 # end def

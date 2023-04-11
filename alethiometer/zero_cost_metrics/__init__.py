@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 17:43:34
-LastEditTime: 2023-04-07 16:02:02
+LastEditTime: 2023-04-11 13:37:59
 LastEditors: ViolinSolo
 Description: init files 
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/__init__.py
@@ -39,3 +39,9 @@ def metric(name, bn=True, copy_net=True, force_clean=True, **impl_args):
 def calc_metric(name, net, device, *args, **kwargs):
     return _metric_impls[name](net, device, *args, **kwargs)
 
+
+# using the following import to trigger metric registration when using @metric
+from . import snip
+from . import synflow
+from . import grasp
+from . import grad_norm
