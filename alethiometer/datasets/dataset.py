@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 18:43:32
-LastEditTime: 2023-04-07 19:02:07
+LastEditTime: 2023-04-17 14:10:20
 LastEditors: ViolinSolo
 Description: dataset file from foresight/dataset.py, modified and update with more fns.
 FilePath: /zero-cost-proxies/alethiometer/datasets/dataset.py
@@ -17,7 +17,18 @@ from .imagenet16 import *
 DATASET_SUPPORTED = ['cifar10', 'cifar100', 'svhn', 'ImageNet16-120', 'ImageNet1k']
 
 def get_cifar_dataloaders(train_batch_size, test_batch_size, dataset, num_workers, resize=None, datadir='_dataset', skip_download_check=False):
+    """
+    get cifar dataset train and test dataloaders.
 
+    :param train_batch_size     is the train dataloader batch size
+    :param test_batch_size      is the test dataloader batch size
+    :param dataset              only support ['cifar10', 'cifar100', 'svhn', 'ImageNet16-120', 'ImageNet1k']
+    :param num_workers          DataLodaer n_workers
+    :param datadir              root dataset dir, storing all dataset data.
+    :param skip_download_check  param to speed up process, skip dataset exist checking, and eliminate the logs
+    
+    :return (train_dataloader, test_dataloader)
+    """
     if dataset not in DATASET_SUPPORTED:
         raise ValueError(f'Check dataset name! "{dataset}" not supported.')
 

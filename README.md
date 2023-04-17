@@ -1,7 +1,7 @@
 <!--
  * @Author: ViolinSolo
  * @Date: 2023-03-26 10:11:01
- * @LastEditTime: 2023-04-11 16:49:09
+ * @LastEditTime: 2023-04-11 18:00:44
  * @LastEditors: ViolinSolo
  * @Description: Readme
  * @FilePath: /zero-cost-proxies/README.md
@@ -29,7 +29,7 @@ source scripts/download_data.sh nb201 ImageNet16-120
 # do not use `bash`, use `source` instead
 ```
 ## 2. Versions
-- V1.0.6  
+- V1.0.5  
 add `naswot, lnwot` into mats
 - V1.0.4  
 fix bugs in calculation, add more test codes.
