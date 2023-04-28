@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-26 12:23:01
-LastEditTime: 2023-04-28 14:53:18
+LastEditTime: 2023-04-28 21:44:16
 LastEditors: ViolinSolo
 Description: original RELU based NASWOT implementation.
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/naswot_relu.py
@@ -22,7 +22,8 @@ def safe_hooklogdet(K):
 
 @metric('nwot_relu', bn=True)
 @metric('nwot_relu_Kmats', bn=True, return_Kmats=True)
-def compute_naswot(net, inputs, targets, loss_fn, split_data=1, return_Kmats=False):
+def compute_naswot(net, inputs, targets, loss_fn, split_data=1, 
+                   return_Kmats=False):
     """
     This is the original RELU based NASWOT implementation.
     Based on v2 paper, and its repo link: 
@@ -33,18 +34,18 @@ def compute_naswot(net, inputs, targets, loss_fn, split_data=1, return_Kmats=Fal
 
     net.K = 0. # **naswot matrix**, NONE-layer-wise | e (mat,) ===> using torch broadcasting tech to init zero-like matrix
     def counting_forward_hook(module, inp, out):
-        try:
-            if not module.visited_backwards:
-                return
-            if isinstance(inp, tuple):
-                inp = inp[0]
-            inp = inp.view(inp.size(0), -1)
-            x = (inp > 0).float()
-            K = x @ x.t()
-            K2 = (1.-x) @ (1.-x.t())
-            net.K = net.K + K.cpu().numpy() + K2.cpu().numpy()
-        except:
-            pass
+        # try:
+        #    if not module.visited_backwards:
+        #        return
+        if isinstance(inp, tuple):
+            inp = inp[0]
+        inp = inp.view(inp.size(0), -1)
+        x = (inp > 0).float()
+        K = x @ x.t()
+        K2 = (1.-x) @ (1.-x.t())
+        net.K = net.K + K.cpu().numpy() + K2.cpu().numpy()  # remove this original code, since we want use broadcasting tech
+        # except:
+        #     pass
 
 
     def counting_backward_hook(module, inp, out):
@@ -55,12 +56,12 @@ def compute_naswot(net, inputs, targets, loss_fn, split_data=1, return_Kmats=Fal
         if 'ReLU' in str(type(module)):
             #hooks[name] = module.register_forward_hook(counting_hook)
             module.register_forward_hook(counting_forward_hook)
-            module.register_backward_hook(counting_backward_hook)
+            # module.register_backward_hook(counting_backward_hook)
 
 
     with torch.no_grad():
         net(inputs)
 
     K_mat = net.K
-    K_mat_logdet = safe_hooklogdet(K_mat.cpu().numpy())
+    K_mat_logdet = safe_hooklogdet(K_mat)
     return (K_mat, K_mat_logdet) if return_Kmats else K_mat_logdet

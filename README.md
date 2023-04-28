@@ -1,7 +1,7 @@
 <!--
  * @Author: ViolinSolo
  * @Date: 2023-03-26 10:11:01
- * @LastEditTime: 2023-04-28 17:09:09
+ * @LastEditTime: 2023-04-28 21:48:00
  * @LastEditors: ViolinSolo
  * @Description: Readme
  * @FilePath: /zero-cost-proxies/README.md
@@ -43,6 +43,9 @@ source scripts/download_data.sh nb201 ImageNet16-120
 # do not use `bash`, use `source` instead
 ```
 ## 2. Versions
+- V1.0.8
+fix bug in `nwot_relu` for wrong for/backward fn register,
+add `tenas` metric, which calculates TE-NAS score. (`tenas`, `ntk`, `lrn`)
 - V1.0.7
 add `zen` metric, which calculates ZenNAS score.
 - V1.0.6  
