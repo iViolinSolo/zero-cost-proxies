@@ -1,7 +1,7 @@
 <!--
  * @Author: ViolinSolo
  * @Date: 2023-03-26 10:11:01
- * @LastEditTime: 2023-04-28 23:26:10
+ * @LastEditTime: 2023-04-28 23:29:03
  * @LastEditors: ViolinSolo
  * @Description: Readme
  * @FilePath: /zero-cost-proxies/README.md
@@ -54,6 +54,8 @@ source scripts/download_data.sh nb201 ImageNet16-120
 # do not use `bash`, use `source` instead
 ```
 ## 2. Versions
+- V1.0.9  
+fix readme format, no code change.
 - V1.0.8  
 fix bug in `nwot_relu` for wrong for/backward fn register,  
 fix bug in `zen` for missed necessary attribute check, add test sample for `zen` metric,  
