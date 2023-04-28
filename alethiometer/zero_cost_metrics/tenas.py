@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-28 17:26:50
-LastEditTime: 2023-04-28 20:08:24
+LastEditTime: 2023-04-28 20:52:55
 LastEditors: ViolinSolo
 Description: TENAS score computation
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/tenas.py
@@ -15,12 +15,16 @@ modified by ViolinSolo from
 https://github.com/idstcv/ZenNAS/blob/main/ZeroShotProxy/compute_te_nas_score.py
 '''
 
-import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# import os, sys
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import argparse
+import time
 import torch
 from torch import nn
-import global_utils, argparse, ModelLoader, time
+# import global_utils, argparse, ModelLoader, time
+from . import metric
+
 
 class LinearRegionCount(object):
     """Computes and stores the average and current value"""
@@ -47,11 +51,17 @@ class LinearRegionCount(object):
 
     @torch.no_grad()
     def calc_LR(self):
+        # each element in res: A * (1 - B)
         res = torch.matmul(self.activations.half(), (1-self.activations).T.half())
+        # make symmetric, each element in res: A * (1 - B) + (1 - A) * B, a non-zero element indicate a pair of two different linear regions
         res += res.T
+        # a non-zero element now indicate two linear regions are identical
         res = 1 - torch.sign(res)
+        # for each sample's linear region: how many identical regions from other samples
         res = res.sum(1)
+        # contribution of each redudant (repeated) linear region
         res = 1. / res.float()
+        # sum of unique regions (by aggregating contribution of all regions)
         self.n_LR = res.sum().item()
         del self.activations, res
         self.activations = None
@@ -146,7 +156,7 @@ class Linear_Region_Collector:
             #     del self.loader
             #     self.loader = iter(self.train_loader)
             #     inputs, targets = self.loader.next()
-            inputs = torch.randn(self.input_size, device=self.device)
+            inputs = torch.randn(self.input_size, device=self.device)  ## TODO: change to real data? I don't if it is necessary?
 
             for model, LRCount in zip(self.models, self.LRCounts):
                 self.forward(model, LRCount, inputs)
@@ -162,15 +172,24 @@ class Linear_Region_Collector:
             LRCount.update2D(feature_data)
 
 
-def compute_RN_score(model: nn.Module,  batch_size=None, image_size=None, num_batch=None, gpu=None):
-    # # just debug
-    # gpu = 0
-    # import ModelLoader
-    # model = ModelLoader._get_model_(arch='resnet18', num_classes=1000, pretrained=False, opt=None, argv=None)
-    #
-    # if gpu is not None:
-    #     model = model.cuda(gpu)
-    lrc_model = Linear_Region_Collector(models=[model], input_size=(batch_size, 3, image_size, image_size),
+@metric('lrn', bn=True, num_batch=1)
+def compute_RN_score(net: nn.Module, inputs, targets, split_data=1, loss_fn=None,  # these are necessary arguments limited by *zero_cost_metrics.__init__.calc_metric*, if you want to add more arguments, modify @metric decorator's parameters to provide dynamic default values.
+                     num_batch=None):
+# def compute_RN_score(model: nn.Module,  batch_size=None, image_size=None, num_batch=None, gpu=None):
+    # # # just debug
+    # # gpu = 0
+    # # import ModelLoader
+    # # model = ModelLoader._get_model_(arch='resnet18', num_classes=1000, pretrained=False, opt=None, argv=None)
+    # #
+    # # if gpu is not None:
+    # #     model = model.cuda(gpu)
+    # lrc_model = Linear_Region_Collector(models=[model], input_size=(batch_size, 3, image_size, image_size),
+    #                                     gpu=gpu, sample_batch=num_batch)
+    
+    device = inputs.device
+    gpu = device.index
+    # gpu = torch.cuda.current_device() #is same with former line
+    lrc_model = Linear_Region_Collector(models=[net], input_size=tuple(inputs.size()),
                                         gpu=gpu, sample_batch=num_batch)
     num_linear_regions = float(lrc_model.forward_batch_sample()[0])
     del lrc_model
