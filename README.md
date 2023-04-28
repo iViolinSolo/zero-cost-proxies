@@ -1,7 +1,7 @@
 <!--
  * @Author: ViolinSolo
  * @Date: 2023-03-26 10:11:01
- * @LastEditTime: 2023-04-28 22:59:20
+ * @LastEditTime: 2023-04-28 23:26:10
  * @LastEditors: ViolinSolo
  * @Description: Readme
  * @FilePath: /zero-cost-proxies/README.md
@@ -37,6 +37,12 @@ Supported zc-metrics are:
 =      to calculate zenas score                         =
 =      (see sample code in tests/test_zc.py)            =
 =-------------------------------------------------------=
+= tenas,                                                =
+=      must work in `gpu` env,                          =
+=      might encouter bug on `cpu`.                     =
+=      also contains metrics:                           =
+= ntk,                                                  =
+= lrn,                                                  = 
 =========================================================
 ```
 
@@ -48,12 +54,12 @@ source scripts/download_data.sh nb201 ImageNet16-120
 # do not use `bash`, use `source` instead
 ```
 ## 2. Versions
-- V1.0.8
-fix bug in `nwot_relu` for wrong for/backward fn register,
-fix bug in `zen` for missed necessary attribute check, add test sample for `zen` metric,
-fix bug in `zen` for return value have not .item() attribute,
+- V1.0.8  
+fix bug in `nwot_relu` for wrong for/backward fn register,  
+fix bug in `zen` for missed necessary attribute check, add test sample for `zen` metric,  
+fix bug in `zen` for return value have not .item() attribute,  
 add `tenas` metric, which calculates TE-NAS score. (`tenas`, `ntk`, `lrn`)
-- V1.0.7
+- V1.0.7  
 add `zen` metric, which calculates ZenNAS score.
 - V1.0.6  
 add original `naswot` implements based on RELU, can be calculated using metirc `nwot_relu`, also fix potential oom bug, and more reliable GPU memory cache removal code snippets.  
