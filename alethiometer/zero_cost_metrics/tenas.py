@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-28 17:26:50
-LastEditTime: 2023-04-28 21:17:27
+LastEditTime: 2023-04-28 22:21:44
 LastEditors: ViolinSolo
 Description: TENAS score computation
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/tenas.py
@@ -306,7 +306,7 @@ def compute_NTK_score(net: nn.Module, inputs, targets, split_data=1, loss_fn=Non
 #  TENAS score computation: tenas part
 # =============================================================================
 
-@metric('tanas', bn=True, num_batch=1)
+@metric('tenas', bn=True, num_batch=1)
 def compute_TENAS_score(net: nn.Module, inputs, targets, split_data=1, loss_fn=None,  # these are necessary arguments limited by *zero_cost_metrics.__init__.calc_metric*, if you want to add more arguments, modify @metric decorator's parameters to provide dynamic default values.
                      num_batch=None): # additional arguments
     ntk = compute_NTK_score(net, inputs, targets, split_data, loss_fn, num_batch)
