@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 18:35:04
-LastEditTime: 2023-04-28 15:08:17
+LastEditTime: 2023-04-28 17:07:31
 LastEditors: ViolinSolo
 Description: entry program
 FilePath: /zero-cost-proxies/alethiometer/zc_proxy.py
@@ -32,6 +32,7 @@ ZC_METRIC_SUPPORTED = [
     'snip',         # snip
     'synflow',      # synflow
     'synflow_bn',   # synflow with bn
+    'zen',          # ZenNAS: https://github.com/idstcv/ZenNAS/blob/main/ZeroShotProxy/compute_zen_score.py
 ]
 
 def no_op(self, x):
