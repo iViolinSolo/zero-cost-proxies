@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 18:35:04
-LastEditTime: 2023-04-11 17:57:53
+LastEditTime: 2023-04-26 15:14:21
 LastEditors: ViolinSolo
 Description: entry program
 FilePath: /zero-cost-proxies/alethiometer/zc_proxy.py
@@ -13,6 +13,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.data as D
 import numpy as np
+import gc
 
 
 from . import zero_cost_metrics as M
@@ -64,12 +65,25 @@ def calc_vals(net_orig, trainloader, device, metric_names:list, loss_fn=F.cross_
             if 'out of memory' in str(e):
                 done=False
                 if ds == inputs.shape[0]//2:
+                    torch.cuda.empty_cache()
+                    gc.collect()
                     raise ValueError(f'Can\'t split data anymore, but still unable to run. Something is wrong') 
                 ds += 1
                 while inputs.shape[0] % ds != 0:
                     ds += 1
                 torch.cuda.empty_cache()
                 print(f'Caught CUDA OOM, retrying with data split into {ds} parts')
+            elif 'Unable to find a valid cuDNN algorithm to run convolution' in str(e):
+                done=False
+                if ds == inputs.shape[0]//2:
+                    torch.cuda.empty_cache()
+                    gc.collect()
+                    raise ValueError(f'Can\'t split data anymore, but still unable to run. Something is wrong') 
+                ds += 1
+                while inputs.shape[0] % ds != 0:
+                    ds += 1
+                torch.cuda.empty_cache()
+                print(f'[no valid cuDNN algorithm found] Caught CUDA OOM, retrying with data split into {ds} parts')
             else:
                 raise e
 

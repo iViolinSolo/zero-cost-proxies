@@ -20,11 +20,13 @@ def metric(name, bn=True, copy_net=True, force_clean=True, **impl_args):
                 net = net_orig.get_prunable_copy(bn=bn).to(device)
             else:
                 net = net_orig.to(device)
-            ret = func(net, *args, **kwargs, **impl_args)
-            if copy_net and force_clean:
-                del net
-                torch.cuda.empty_cache()
-                gc.collect()
+            try:
+                ret = func(net, *args, **kwargs, **impl_args)
+            finally:
+                if copy_net and force_clean:
+                    del net
+                    torch.cuda.empty_cache()
+                    gc.collect()
             return ret
 
         global _metric_impls
