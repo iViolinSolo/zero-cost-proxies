@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 17:43:34
-LastEditTime: 2023-04-11 16:46:48
+LastEditTime: 2023-04-28 14:56:49
 LastEditors: ViolinSolo
 Description: init files 
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/__init__.py
@@ -47,4 +47,5 @@ from . import snip
 from . import synflow
 from . import grasp
 from . import grad_norm
-from . import naswot
+from . import naswot # this is our NASWOT implementation (layer-wise or not, based on conv and fc)
+from . import naswot_relu  # this is original RELU based NASWOT implementation

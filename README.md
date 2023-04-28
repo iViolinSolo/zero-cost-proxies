@@ -1,7 +1,7 @@
 <!--
  * @Author: ViolinSolo
  * @Date: 2023-03-26 10:11:01
- * @LastEditTime: 2023-04-11 18:00:44
+ * @LastEditTime: 2023-04-28 15:16:39
  * @LastEditors: ViolinSolo
  * @Description: Readme
  * @FilePath: /zero-cost-proxies/README.md
@@ -13,12 +13,24 @@ Modified and simplified from [foresight repo](https://github.com/SamsungLabs/zer
 
 Supported zc-metrics are:
 ```
-grad_norm,
-grasp,
-snip,
-synflow,
-nwot, (NASWOT)
-lnwot, (Layerwise NASWOT)
+=========================================================
+= grad_norm,                                            =
+=-------------------------------------------------------=
+= grasp,                                                =
+=-------------------------------------------------------=
+= snip,                                                 =
+=-------------------------------------------------------=
+= synflow,                                              =
+=-------------------------------------------------------=
+= nwot, (NASWOT)                                        =
+=       [nwot, nwot_Kmats]                              =
+=-------------------------------------------------------=
+= lnwot, (Layerwise NASWOT)                             =
+=       [lnwot, lnwot_Kmats]                            =
+=-------------------------------------------------------=
+= nwot_relu, (original RELU based NASWOT metric)        =
+=       [nwot_relu, nwot_relu_Kmats]                    =
+=========================================================
 ```
 
 
@@ -29,6 +41,8 @@ source scripts/download_data.sh nb201 ImageNet16-120
 # do not use `bash`, use `source` instead
 ```
 ## 2. Versions
+- V1.0.6  
+add original `naswot` implements based on RELU, can be calculated using metirc `nwot_relu`, also fix potential oom bug, and more reliable GPU memory cache removal code snippets.  
 - V1.0.5  
 add `naswot, lnwot` into mats
 - V1.0.4  

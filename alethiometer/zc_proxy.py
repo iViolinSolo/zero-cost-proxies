@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 18:35:04
-LastEditTime: 2023-04-26 15:14:21
+LastEditTime: 2023-04-28 15:08:17
 LastEditors: ViolinSolo
 Description: entry program
 FilePath: /zero-cost-proxies/alethiometer/zc_proxy.py
@@ -21,8 +21,17 @@ from .utils import get_some_data
 
 
 ZC_METRIC_SUPPORTED = [
-    '',
-
+    'grad_norm',    # grad_norm
+    'grasp',        # grasp
+    'nwot_relu',    # relu based NASWOT, original implementation
+    'nwot_relu_Kmats',  # return(Kmats, logdet) relu based NASWOT, but return Kmats and its logdet 
+    'nwot',         # our conv and fc based NASWOT
+    'nwot_Kmats',   # return(Kmats, logdet) our conv and fc based NASWOT, but return Kmats and its logdet
+    'lnwot',        # layer-wise our conv and fc based NASWOT
+    'lnwot_Kmats',  # return(Kmats, logdet) layer-wise our conv and fc based NASWOT, but return Kmats and its logdet
+    'snip',         # snip
+    'synflow',      # synflow
+    'synflow_bn',   # synflow with bn
 ]
 
 def no_op(self, x):
