@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-28 17:26:50
-LastEditTime: 2023-04-28 22:21:44
+LastEditTime: 2023-04-28 23:15:23
 LastEditors: ViolinSolo
 Description: TENAS score computation
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/tenas.py
@@ -55,10 +55,20 @@ class LinearRegionCount(object):
 
     @torch.no_grad()
     def calc_LR(self):
+        # #debug lines, try to check which device this variable is on
+        # print('activations shape: ', self.activations.shape)
+        # print('activations type: ', self.activations.dtype)
+        # print('activations device: ', self.activations.device)
+
         # each element in res: A * (1 - B)
         res = torch.matmul(self.activations.half(), (1-self.activations).T.half())
+        
         # make symmetric, each element in res: A * (1 - B) + (1 - A) * B, a non-zero element indicate a pair of two different linear regions
-        res += res.T
+        # res += res.T # remove this line, replace inplace ops with non-inplace ops
+        # # Bug Fix: RuntimeError: unsupported operation: some elements of the input tensor and the written-to tensor refer to a single memory location. Please clone() the tensor before performing the operation.
+        # # just avoid inplace operation.
+        res = res + res.T
+
         # a non-zero element now indicate two linear regions are identical
         res = 1 - torch.sign(res)
         # for each sample's linear region: how many identical regions from other samples
@@ -195,7 +205,8 @@ def compute_RN_score(net: nn.Module, inputs, targets, split_data=1, loss_fn=None
     # gpu = torch.cuda.current_device() #is same with former line
     lrc_model = Linear_Region_Collector(models=[net], input_size=tuple(inputs.size()),
                                         gpu=gpu, sample_batch=num_batch)
-    num_linear_regions = float(lrc_model.forward_batch_sample()[0])
+    # num_linear_regions = float(lrc_model.forward_batch_sample()[0])  # ViolinSolo: for standardization, we manually convert it to numpy.float64, matching the type of NTK score
+    num_linear_regions = np.float64(lrc_model.forward_batch_sample()[0])
     del lrc_model
     torch.cuda.empty_cache()
     return num_linear_regions

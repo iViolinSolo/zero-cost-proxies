@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 18:35:04
-LastEditTime: 2023-04-28 22:22:36
+LastEditTime: 2023-04-28 23:16:16
 LastEditors: ViolinSolo
 Description: entry program
 FilePath: /zero-cost-proxies/alethiometer/zc_proxy.py
@@ -123,10 +123,12 @@ def calc_zc_metrics(metrics: list, model: nn.Module, train_queue: D.DataLoader, 
                 sum += torch.sum(val)
         else:
             sum = arr
-        return sum.item()
+        # print('sum type', type(sum))
+        return sum.item() if hasattr(sum, 'item') else sum  #fix bug when sum is neither tensor nor numpy.float32 nor numpy.float64
     
     results = {}
     for k, v in mt_vals.items():
+        # print('k', k)
         results[k] = v if not aggregate else sum_arr(v)
 
     return results
