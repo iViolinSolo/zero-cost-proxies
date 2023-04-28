@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-23 12:57:36
-LastEditTime: 2023-04-28 22:02:46
+LastEditTime: 2023-04-28 22:42:23
 LastEditors: ViolinSolo
 Description: zen
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/zen.py
@@ -80,6 +80,7 @@ def compute_zen_score(net, inputs, targets, loss_fn=None, split_data=1,
     ## 95% confidence interval of NAS score
     # std_nas_score = np.std(nas_score_list)
     # avg_precision = float(1.96 * std_nas_score / np.sqrt(len(nas_score_list)))
-    avg_nas_score = float(np.mean(nas_score_list))
+    # avg_nas_score = float(np.mean(nas_score_list))
+    avg_nas_score = np.mean(nas_score_list)  # fix bug when calling .item() on this return value
 
     return avg_nas_score

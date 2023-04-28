@@ -1,7 +1,7 @@
 <!--
  * @Author: ViolinSolo
  * @Date: 2023-03-26 10:11:01
- * @LastEditTime: 2023-04-28 21:48:00
+ * @LastEditTime: 2023-04-28 22:25:07
  * @LastEditors: ViolinSolo
  * @Description: Readme
  * @FilePath: /zero-cost-proxies/README.md
@@ -32,6 +32,10 @@ Supported zc-metrics are:
 =       [nwot_relu, nwot_relu_Kmats]                    =
 =-------------------------------------------------------=
 = zen,                                                  =
+=      Your network need have attribute fn:             =
+=         `forward_before_global_avg_pool(inputs)`      =
+=      to calculate zenas score                         =
+=-------------------------------------------------------=
 =========================================================
 ```
 
@@ -45,6 +49,7 @@ source scripts/download_data.sh nb201 ImageNet16-120
 ## 2. Versions
 - V1.0.8
 fix bug in `nwot_relu` for wrong for/backward fn register,
+fix bug in `zen` for missed necessary attribute check, add test sample for `zen` metric,
 add `tenas` metric, which calculates TE-NAS score. (`tenas`, `ntk`, `lrn`)
 - V1.0.7
 add `zen` metric, which calculates ZenNAS score.

@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 19:25:08
-LastEditTime: 2023-04-28 22:20:35
+LastEditTime: 2023-04-28 22:41:21
 LastEditors: ViolinSolo
 Description: Test zc-proxies.
 FilePath: /zero-cost-proxies/tests/test_zc.py
@@ -36,7 +36,8 @@ def test_zc_proxies():
 
     # setup network
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    net = models.densenet161()
+    # net = models.densenet161()
+    net = models.resnet50()  # BUG fix: use resnet50 instead, because densenet161 using F.adaptive_avg_pool2d instead of nn.AdaptiveAvgPool2d, we cannot test it on zen.
     net.to(device)
 
     # setup dataloader
@@ -44,9 +45,9 @@ def test_zc_proxies():
     train_loader, test_loader = get_cifar_dataloaders(64, 64, 'cifar10', 2)
 
     from alethiometer import calc_zc_metrics
-    mts = ['snip', 'grasp', 'grad_norm', 'synflow', 'nwot', 'lnwot', 'nwot_relu', 'tenas', 'lrn', 'ntk']
-    results = calc_zc_metrics(metrics=mts, model=net, train_queue=train_loader, device=device, aggregate=True)
-    print(results)
+    # mts = ['snip', 'grasp', 'grad_norm', 'synflow', 'nwot', 'lnwot', 'nwot_relu',  'ntk']
+    # results = calc_zc_metrics(metrics=mts, model=net, train_queue=train_loader, device=device, aggregate=True)
+    # print(results)
     
 
     # ==================== test zen ====================
@@ -63,10 +64,12 @@ def test_zc_proxies():
             outputs.append(inputs[0])
 
         for m in self.modules():
+            # print('m.type: ', type(m))
             if isinstance(m, torch.nn.AdaptiveAvgPool2d):
                 m.register_forward_hook(hook_fn)
 
-        self.forward(x, None)
+        # self.forward(x, None)
+        self.forward(x)
 
         assert len(outputs) == 1
         return outputs[0]
