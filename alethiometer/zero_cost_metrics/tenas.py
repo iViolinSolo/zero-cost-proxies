@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-28 17:26:50
-LastEditTime: 2023-04-28 20:52:55
+LastEditTime: 2023-04-28 21:17:27
 LastEditors: ViolinSolo
 Description: TENAS score computation
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/tenas.py
@@ -22,9 +22,13 @@ import argparse
 import time
 import torch
 from torch import nn
+import numpy as np
 # import global_utils, argparse, ModelLoader, time
 from . import metric
 
+# =============================================================================
+#  TENAS score computation: lrn part
+# =============================================================================
 
 class LinearRegionCount(object):
     """Computes and stores the average and current value"""
@@ -174,7 +178,7 @@ class Linear_Region_Collector:
 
 @metric('lrn', bn=True, num_batch=1)
 def compute_RN_score(net: nn.Module, inputs, targets, split_data=1, loss_fn=None,  # these are necessary arguments limited by *zero_cost_metrics.__init__.calc_metric*, if you want to add more arguments, modify @metric decorator's parameters to provide dynamic default values.
-                     num_batch=None):
+                     num_batch=None): # additional arguments
 # def compute_RN_score(model: nn.Module,  batch_size=None, image_size=None, num_batch=None, gpu=None):
     # # # just debug
     # # gpu = 0
@@ -198,8 +202,13 @@ def compute_RN_score(net: nn.Module, inputs, targets, split_data=1, loss_fn=None
 
 
 
-import numpy as np
-import torch
+# =============================================================================
+#  TENAS score computation: ntk part
+# =============================================================================
+
+
+# import numpy as np
+# import torch
 
 
 def recal_bn(network, xloader, recalbn, device):
@@ -252,7 +261,10 @@ def get_ntk_n(networks, recalbn=0, train_mode=False, num_batch=None,
 
             logit = network(inputs_)
             if isinstance(logit, tuple):
-                logit = logit[1]  # 201 networks: return features and logits
+                # logit = logit[1]  # 201 networks: return features and logits
+                _, logit = logit  # 201 networks: return features and logits | same as above
+                # ViolinSolo: just like other metrics, we assume if logit is tuple,
+                #   the first element of logits is *feature*, the second is *logit*
             for _idx in range(len(inputs_)):
                 logit[_idx:_idx+1].backward(torch.ones_like(logit[_idx:_idx+1]), retain_graph=True)
                 grad = []
@@ -275,42 +287,62 @@ def get_ntk_n(networks, recalbn=0, train_mode=False, num_batch=None,
     return conds
 
 
+@metric('ntk', bn=True, num_batch=1)
+def compute_NTK_score(net: nn.Module, inputs, targets, split_data=1, loss_fn=None,  # these are necessary arguments limited by *zero_cost_metrics.__init__.calc_metric*, if you want to add more arguments, modify @metric decorator's parameters to provide dynamic default values.
+                     num_batch=None): # additional arguments
+# def compute_NTK_score(gpu, model, resolution, batch_size):
+    device = inputs.device
+    gpu = device.index
 
-def compute_NTK_score(gpu, model, resolution, batch_size):
-    ntk_score = get_ntk_n([model], recalbn=0, train_mode=True, num_batch=1,
+    # (batch_size, 3, resolution, resolution) = inputs.shape
+    batch_size, _, resolution, _ = inputs.size()
+
+    ntk_score = get_ntk_n([net], recalbn=0, train_mode=True, num_batch=num_batch,
                            batch_size=batch_size, image_size=resolution, gpu=gpu)[0]
     return -1 * ntk_score
 
 
+# =============================================================================
+#  TENAS score computation: tenas part
+# =============================================================================
 
-def parse_cmd_options(argv):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--batch_size', type=int, default=16, help='number of instances in one mini-batch.')
-    parser.add_argument('--input_image_size', type=int, default=None,
-                        help='resolution of input image, usually 32 for CIFAR and 224 for ImageNet.')
-    parser.add_argument('--repeat_times', type=int, default=32)
-    parser.add_argument('--gpu', type=int, default=None)
-    module_opt, _ = parser.parse_known_args(argv)
-    return module_opt
-
-
-
-if __name__ == "__main__":
-    opt = global_utils.parse_cmd_options(sys.argv)
-    args = parse_cmd_options(sys.argv)
-    the_model = ModelLoader.get_model(opt, sys.argv)
-    if args.gpu is not None:
-        the_model = the_model.cuda(args.gpu)
+@metric('tanas', bn=True, num_batch=1)
+def compute_TENAS_score(net: nn.Module, inputs, targets, split_data=1, loss_fn=None,  # these are necessary arguments limited by *zero_cost_metrics.__init__.calc_metric*, if you want to add more arguments, modify @metric decorator's parameters to provide dynamic default values.
+                     num_batch=None): # additional arguments
+    ntk = compute_NTK_score(net, inputs, targets, split_data, loss_fn, num_batch)
+    RN = compute_RN_score(net, inputs, targets, split_data, loss_fn, num_batch)
+    the_score = ntk + RN
+    return the_score
 
 
-    start_timer = time.time()
+# def parse_cmd_options(argv):
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('--batch_size', type=int, default=16, help='number of instances in one mini-batch.')
+#     parser.add_argument('--input_image_size', type=int, default=None,
+#                         help='resolution of input image, usually 32 for CIFAR and 224 for ImageNet.')
+#     parser.add_argument('--repeat_times', type=int, default=32)
+#     parser.add_argument('--gpu', type=int, default=None)
+#     module_opt, _ = parser.parse_known_args(argv)
+#     return module_opt
 
-    for repeat_count in range(args.repeat_times):
-        ntk = compute_NTK_score(gpu=args.gpu, model=the_model,
-                             resolution=args.input_image_size, batch_size=args.batch_size)
-        RN = compute_RN_score(model=the_model, batch_size=args.batch_size, image_size=args.input_image_size,
-                              num_batch=1, gpu=args.gpu)
-        the_score = RN + ntk
-    time_cost = (time.time() - start_timer) / args.repeat_times
 
-    print(f'ntk={the_score:.4g}, time cost={time_cost:.4g} second(s)')
+
+# if __name__ == "__main__":
+#     opt = global_utils.parse_cmd_options(sys.argv)
+#     args = parse_cmd_options(sys.argv)
+#     the_model = ModelLoader.get_model(opt, sys.argv)
+#     if args.gpu is not None:
+#         the_model = the_model.cuda(args.gpu)
+
+
+#     start_timer = time.time()
+
+#     for repeat_count in range(args.repeat_times):
+#         ntk = compute_NTK_score(gpu=args.gpu, model=the_model,
+#                              resolution=args.input_image_size, batch_size=args.batch_size)
+#         RN = compute_RN_score(model=the_model, batch_size=args.batch_size, image_size=args.input_image_size,
+#                               num_batch=1, gpu=args.gpu)
+#         the_score = RN + ntk
+#     time_cost = (time.time() - start_timer) / args.repeat_times
+
+#     print(f'ntk={the_score:.4g}, time cost={time_cost:.4g} second(s)')
