@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-23 12:57:36
-LastEditTime: 2023-04-28 17:04:40
+LastEditTime: 2023-04-28 22:02:46
 LastEditors: ViolinSolo
 Description: zen
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/zen.py
@@ -55,6 +55,10 @@ def compute_zen_score(net, inputs, targets, loss_fn=None, split_data=1,
             input = torch.randn(size=list(inputs.shape), device=device, dtype=dtype)
             input2 = torch.randn(size=list(inputs.shape), device=device, dtype=dtype)
             mixup_input = input + mixup_gamma * input2
+
+            if not hasattr(net, 'forward_before_global_avg_pool'):
+                suggestion_msg = "\n\tPlease implement forward_before_global_avg_pool() in your network.\n\tYou can follow implementation of fn:`forward_pre_GAP()` in ZenNet:\n\thttps://github.com/idstcv/ZenNAS/blob/2629dc5692b3d9d01ef94b559e6bd4a4b114b617/Masternet.py#L98"
+                raise NotImplementedError(suggestion_msg)
 
             output = net.forward_before_global_avg_pool(input)
             mixup_output = net.forward_before_global_avg_pool(mixup_input)
