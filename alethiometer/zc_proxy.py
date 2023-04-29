@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 18:35:04
-LastEditTime: 2023-04-28 23:16:16
+LastEditTime: 2023-04-29 09:27:24
 LastEditors: ViolinSolo
 Description: entry program
 FilePath: /zero-cost-proxies/alethiometer/zc_proxy.py
@@ -36,6 +36,8 @@ ZC_METRIC_SUPPORTED = [
     'tenas',        # tenas.py contains three metrics: lrn, ntk, tenas
     'ntk',          # NTK
     'lrn',          # LRN
+    'zico',         # ZICO
+    
 ]
 
 def no_op(self, x):

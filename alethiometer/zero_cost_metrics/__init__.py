@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-06 17:43:34
-LastEditTime: 2023-04-28 21:48:59
+LastEditTime: 2023-04-29 09:26:56
 LastEditors: ViolinSolo
 Description: init files 
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/__init__.py
@@ -51,3 +51,4 @@ from . import naswot # this is our NASWOT implementation (layer-wise or not, bas
 from . import naswot_relu  # this is original RELU based NASWOT implementation
 from . import zen 
 from . import tenas # this is TENAS implementation, including lrn, ntk, tenas
+from . import zico
