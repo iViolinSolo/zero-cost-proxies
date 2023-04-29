@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-07 19:25:08
-LastEditTime: 2023-04-28 23:18:57
+LastEditTime: 2023-04-29 10:45:56
 LastEditors: ViolinSolo
 Description: Test zc-proxies.
 FilePath: /zero-cost-proxies/tests/test_zc.py
@@ -81,6 +81,13 @@ def test_zc_proxies():
     results = calc_zc_metrics(metrics=['zen'], model=net, train_queue=train_loader, device=device, aggregate=True)
     print(results)
 
+    # ==================== test zico ====================
+    # test zico
+    print('-'*20)
+    print('test zico .....')
+
+    results = calc_zc_metrics(metrics=['zico'], model=net, train_queue=train_loader, device=device, aggregate=True)
+    print(results)
 
 
 if __name__ == "__main__":

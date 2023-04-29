@@ -1,7 +1,7 @@
 <!--
  * @Author: ViolinSolo
  * @Date: 2023-03-26 10:11:01
- * @LastEditTime: 2023-04-28 23:29:03
+ * @LastEditTime: 2023-04-29 10:48:36
  * @LastEditors: ViolinSolo
  * @Description: Readme
  * @FilePath: /zero-cost-proxies/README.md
@@ -43,6 +43,10 @@ Supported zc-metrics are:
 =      also contains metrics:                           =
 = ntk,                                                  =
 = lrn,                                                  = 
+=-------------------------------------------------------=
+= zico,                                                 =
+=     zico must use at least two batches of data,       =
+=     in order to calculate cross-batch (non-zero) std  =
 =========================================================
 ```
 
@@ -54,6 +58,8 @@ source scripts/download_data.sh nb201 ImageNet16-120
 # do not use `bash`, use `source` instead
 ```
 ## 2. Versions
+- V1.0.10  
+add `zico` metric, which calculates ZICO score.  
 - V1.0.9  
 fix readme format, no code change.
 - V1.0.8  

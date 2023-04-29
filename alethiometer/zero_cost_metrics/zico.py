@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-23 12:57:57
-LastEditTime: 2023-04-29 09:27:12
+LastEditTime: 2023-04-29 10:45:14
 LastEditors: ViolinSolo
 Description: 
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/zico.py
@@ -41,6 +41,7 @@ def caculate_zico(grad_dict):
     nsr_mean_avg = 0
     nsr_mean_avg_abs = 0
     for j, modname in enumerate(grad_dict.keys()):
+        # if grad_dict[modname].shape is (1, N), this would be a bug, bacause std would be list of 0
         nsr_std = np.std(grad_dict[modname], axis=0)
         nonzero_idx = np.nonzero(nsr_std)[0]
         nsr_mean_abs = np.mean(np.abs(grad_dict[modname]), axis=0)
@@ -59,6 +60,9 @@ def getzico(net, inputs, targets, loss_fn=None, split_data=1,  # these are neces
     grad_dict= {}
     net.train()
 
+    # split_data = 2
+    assert split_data > 1, "zico need split_data > 1, at least 2, so cross-batch gradient std can be non-zero list."
+
     # net.cuda()
     # for i, batch in enumerate(trainloader):
         # network.zero_grad()
@@ -69,7 +73,7 @@ def getzico(net, inputs, targets, loss_fn=None, split_data=1,  # these are neces
         # loss = loss_fn(logits, label)
         # loss.backward()
         # grad_dict= getgrad(network, grad_dict,i)
-    
+
     net.zero_grad()
     N = inputs.shape[0]
     for sp in range(split_data):
