@@ -1,7 +1,7 @@
 <!--
  * @Author: ViolinSolo
  * @Date: 2023-03-26 10:11:01
- * @LastEditTime: 2023-04-29 10:48:36
+ * @LastEditTime: 2023-04-30 17:25:08
  * @LastEditors: ViolinSolo
  * @Description: Readme
  * @FilePath: /zero-cost-proxies/README.md
@@ -47,6 +47,8 @@ Supported zc-metrics are:
 = zico,                                                 =
 =     zico must use at least two batches of data,       =
 =     in order to calculate cross-batch (non-zero) std  =
+=-------------------------------------------------------=
+= tcet,                                                 =
 =========================================================
 ```
 

@@ -1,7 +1,7 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-29 17:33:33
-LastEditTime: 2023-04-30 16:21:55
+LastEditTime: 2023-04-30 17:14:56
 LastEditors: ViolinSolo
 Description: t_cet metric
 FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/t_cet.py
@@ -17,12 +17,12 @@ from .snip import compute_snip_per_weight
 
 
 @metric('tcet_syn_none', bn=False, mode='none', mt='synflow')
-@metric('tcet_snip_none', bn=True, mode='none', mt='snip')
 @metric('tcet_syn_log', bn=False, mode='log', mt='synflow')
-@metric('tcet_snip_log', bn=True, mode='log', mt='snip')
 @metric('tcet_syn_log1p', bn=False, mode='log1p', mt='synflow')
-@metric('tcet_snip_log1p', bn=True, mode='log1p', mt='snip')
 @metric('tcet_syn_norm', bn=False, mode='norm', mt='synflow')
+@metric('tcet_snip_none', bn=True, mode='none', mt='snip')
+@metric('tcet_snip_log', bn=True, mode='log', mt='snip')
+@metric('tcet_snip_log1p', bn=True, mode='log1p', mt='snip')
 @metric('tcet_snip_norm', bn=True, mode='norm', mt='snip')
 @metric('tcet', bn=False, mode='none', mt='synflow')
 def compute_tcet_score(net, inputs, targets, loss_fn=None, split_data=1,
@@ -38,47 +38,12 @@ def compute_tcet_score(net, inputs, targets, loss_fn=None, split_data=1,
     lnwot_scores = compute_naswot(net, inputs, targets, loss_fn, split_data, layerwise=True, return_Kmats=False)
 
     # compute layerwise mt scores
-    mt_scores = None
-    if mt == 'synflow':
-        synflow_scores = compute_synflow_per_weight(net, inputs, targets, loss_fn, split_data, mode='param')
-        mt_scores = synflow_scores
-    elif mt == 'snip':
-        snip_scores = compute_snip_per_weight(net, inputs, targets, loss_fn, split_data, mode='param')
-        mt_scores = snip_scores
-    
-    # compute snr mt scores
-    snr_mt_scores = []
-    for mt_score in mt_scores:
-        s = mt_score.detach().view(-1)
+    mt_scores = compute_snr_score(net, inputs, targets, loss_fn, split_data, mode=mode, mt=mt)
 
-        sigma = torch.std(s)
-        sigma = torch.tensor(0.) if torch.isnan(sigma) else sigma  ###TODO: Notice, torch.std(torch.tensor([2.2]))==tensor(nan), np.std([2.2])==0.
-        
-        if sigma == 0 or torch.isnan(sigma):
-            s = torch.sum(s)
-        else:
-            s = torch.sum(s)/sigma
-            
-        s_val = s.cpu().item()
-        snr_mt_scores.append(s_val)
-
-
-    _mt_std = np.std(snr_mt_scores) if mode == 'norm' else 0.
     # compute layerwise t_cet scores
     tcet_scores = []
-    for lnwot_score, s_val in zip(lnwot_scores, snr_mt_scores):
-        if mode == 'none':
-            s_val = s_val
-        elif mode == 'log':
-            s_val = np.log(s_val) if s_val>0 else 0.
-        elif mode == 'log1p':
-            s_val = np.log1p(s_val) if s_val>=0 else 0.
-        elif mode == 'norm':
-            s_val = (s_val / _mt_std) if _mt_std>0 else s_val
-
-        l_val = lnwot_score.cpu().item()
-        tcet_score = l_val * s_val
-        tcet_scores.append(tcet_score)
+    for lnwot_score, mt_score in zip(lnwot_scores, mt_scores):
+        tcet_scores.append(lnwot_score * mt_score)
     
     return tcet_scores
 
@@ -106,10 +71,10 @@ def compute_snr_score(net, inputs, targets, loss_fn=None, split_data=1,
     # compute layerwise mt scores
     mt_scores = None
     if mt == 'synflow':
-        synflow_scores = compute_synflow_per_weight(net, inputs, targets, loss_fn, split_data, mode='param')
+        synflow_scores = compute_synflow_per_weight(net, inputs, targets, mode='param', split_data=split_data, loss_fn=loss_fn)
         mt_scores = synflow_scores
     elif mt == 'snip':
-        snip_scores = compute_snip_per_weight(net, inputs, targets, loss_fn, split_data, mode='param')
+        snip_scores = compute_snip_per_weight(net, inputs, targets, mode='param', split_data=split_data, loss_fn=loss_fn)
         mt_scores = snip_scores
     
     # compute snr mt scores
@@ -128,20 +93,15 @@ def compute_snr_score(net, inputs, targets, loss_fn=None, split_data=1,
         s_val = s.cpu().item()
         snr_mt_scores.append(s_val)
 
+    if mode == 'none':
+        return snr_mt_scores
+    elif mode == 'log':
+        log_sc = np.log(snr_mt_scores)
+        return np.nan_to_num(log_sc, nan=0.0, posinf=0.0, neginf=0.0)
+    elif mode == 'log1p':
+        log_sc = np.log1p(snr_mt_scores)
+        return np.nan_to_num(log_sc, nan=0.0, posinf=0.0, neginf=0.0)
+    elif mode == 'norm':
+        _mt_std = np.std(snr_mt_scores)
+        return [s/_mt_std if _mt_std>0 else s for s in snr_mt_scores]
 
-    _mt_std = np.std(snr_mt_scores) if mode == 'norm' else 0.
-    # compute applied snr scores
-    snr_scores = []
-    for s_val in snr_mt_scores:
-        if mode == 'none':
-            s_val = s_val
-        elif mode == 'log':
-            s_val = np.log(s_val) if s_val>0 else 0.
-        elif mode == 'log1p':
-            s_val = np.log1p(s_val) if s_val>=0 else 0.
-        elif mode == 'norm':
-            s_val = (s_val / _mt_std) if _mt_std>0 else s_val
-
-        snr_scores.append(s_val)
-    
-    return snr_scores
