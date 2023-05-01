@@ -61,6 +61,11 @@ def getzico(net, inputs, targets, loss_fn=None, split_data=1,  # these are neces
     net.train()
 
     # split_data = 2
+    # =====================
+    # mandatory double the split_data parameter, to correctly calculate the std of cross-batch gradient.
+    N = inputs.shape[0]
+    split_data = min(split_data*2, N)
+
     assert split_data > 1, "zico need split_data > 1, at least 2, so cross-batch gradient std can be non-zero list."
 
     # net.cuda()

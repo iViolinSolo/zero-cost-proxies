@@ -37,7 +37,26 @@ ZC_METRIC_SUPPORTED = [
     'ntk',          # NTK
     'lrn',          # LRN
     'zico',         # ZICO
-    
+    'tcet',         # TCET ========================
+    'tcet_snip_none',
+    'tcet_snip_log',
+    'tcet_snip_log1p',
+    'tcet_snip_norm',
+    'tcet_syn_none',
+    'tcet_syn_log',
+    'tcet_syn_log1p',
+    'tcet_syn_norm',# TCET ========================
+    'snr_snip',     # SNR ========================
+    'snr_syn',
+    'snr_snip_none',
+    'snr_snip_log',
+    'snr_snip_log1p',
+    'snr_snip_norm',
+    'snr_syn_none',
+    'snr_syn_log',
+    'snr_syn_log1p',
+    'snr_syn_norm', # SNR ========================
+
 ]
 
 def no_op(self, x):
