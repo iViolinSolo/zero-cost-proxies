@@ -44,7 +44,7 @@ Supported zc-metrics are:
 = ntk,                                                  =
 = lrn,                                                  = 
 =-------------------------------------------------------=
-= zico,                                                 =
+= zico, not work in torch-cpu, I will check it later.   =
 =     zico must use at least two batches of data,       =
 =     in order to calculate cross-batch (non-zero) std  =
 =-------------------------------------------------------=

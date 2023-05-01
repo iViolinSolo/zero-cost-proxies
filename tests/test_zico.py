@@ -15,13 +15,13 @@ def test_tcet():
 
     # setup network
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    # net = models.densenet161()
-    net = models.resnet50()  # BUG fix: use resnet50 instead, because densenet161 using F.adaptive_avg_pool2d instead of nn.AdaptiveAvgPool2d, we cannot test it on zen.
+    net = models.densenet161()
+    # net = models.resnet50()  # BUG fix: use resnet50 instead, because densenet161 using F.adaptive_avg_pool2d instead of nn.AdaptiveAvgPool2d, we cannot test it on zen.
     net.to(device)
 
     # setup dataloader
     from alethiometer import get_cifar_dataloaders
-    train_loader, test_loader = get_cifar_dataloaders(64, 64, 'cifar10', 2)
+    train_loader, test_loader = get_cifar_dataloaders(32, 64, 'cifar10', 2)
 
     from alethiometer import calc_zc_metrics
     mts = [
