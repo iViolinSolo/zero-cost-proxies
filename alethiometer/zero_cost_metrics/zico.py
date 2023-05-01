@@ -25,10 +25,20 @@ def getgrad(model:torch.nn.Module, grad_dict:dict, step_iter=0):
             if isinstance(mod, nn.Conv2d) or isinstance(mod, nn.Linear):
                 # print(mod.weight.grad.data.size())
                 # print(mod.weight.data.size())
+                # print(name, mod.weight.grad.data.size())
+                if(mod.weight.grad is None):
+                    # print(f"{name} grad is None")
+                    continue
+                
+                # print(name, mod.weight.grad.data.size())
                 grad_dict[name]=[mod.weight.grad.data.cpu().reshape(-1).numpy()]
     else:
         for name,mod in model.named_modules():
             if isinstance(mod, nn.Conv2d) or isinstance(mod, nn.Linear):
+                if(mod.weight.grad is None):
+                    # print(f"{name} grad is None")
+                    continue
+                # print(name, mod.weight.grad.data.size())
                 grad_dict[name].append(mod.weight.grad.data.cpu().reshape( -1).numpy())
     return grad_dict
 
@@ -65,7 +75,6 @@ def getzico(net, inputs, targets, loss_fn=None, split_data=1,  # these are neces
     # mandatory double the split_data parameter, to correctly calculate the std of cross-batch gradient.
     N = inputs.shape[0]
     split_data = min(split_data*2, N)
-    print(f"zico split_data: {split_data}")
 
     assert split_data > 1, "zico need split_data > 1, at least 2, so cross-batch gradient std can be non-zero list."
 
@@ -81,7 +90,7 @@ def getzico(net, inputs, targets, loss_fn=None, split_data=1,  # these are neces
         # grad_dict= getgrad(network, grad_dict,i)
 
     net.zero_grad()
-    N = inputs.shape[0]
+    # N = inputs.shape[0]
     for sp in range(split_data):
         st=sp*N//split_data
         en=(sp+1)*N//split_data
