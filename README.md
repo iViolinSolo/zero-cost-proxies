@@ -52,6 +52,36 @@ Supported zc-metrics are:
 =========================================================
 ```
 
+## 0. How to install.
+1. First create conda env with python version >= 3.6, this repo has been completely tested on python 3.9.  
+    ```bash
+    conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.6 -c pytorch -c nvidia
+    ```
+2. Install torch, torchvision, cudatoolkit.
+    ```bash
+    Tested on:
+    pytorch==1.13.1  (py3.9_cuda11.6_cudnn8.3.2_0)
+    python==3.9.16
+    cuda 11.6
+    torchvision==0.14.1 (py39_cu116)
+    torchaudio==0.13.1 (py39_cu116)
+    ```
+3. this repo is perfectly compatible with current mainstream zc testing framework, including zennas, naslib, nb201 related repos, nb101, nb1shot1, blox, etc.  
+
+4. If you still cannot use this repo, try to contact me, or try to setup some mainstream nas testing benchmarks, then most problems would be solved.  
+
+5. Finally, if all the previous basic enviroment requirements are met, then try this lib with just one single command.
+    ```
+    pip install -e .
+    # running this command under the root directory where the setup.py locates in.
+    ```
+6. check installation success.
+    ```bash
+    cd tests/
+    python test_zc.py
+    ```
+
+
 
 ## 1. Tests
 ImageNet16-120 cannot be automatically downloaded. Using script under `scripts/download_data.sh` to download:
