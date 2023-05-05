@@ -1,7 +1,7 @@
 <!--
  * @Author: ViolinSolo
  * @Date: 2023-03-26 10:11:01
- * @LastEditTime: 2023-04-30 17:25:08
+ * @LastEditTime: 2023-05-05 17:15:45
  * @LastEditors: ViolinSolo
  * @Description: Readme
  * @FilePath: /zero-cost-proxies/README.md
@@ -90,6 +90,12 @@ source scripts/download_data.sh nb201 ImageNet16-120
 # do not use `bash`, use `source` instead
 ```
 ## 2. Versions
+- V1.1.1  
+Fix warnings in `tenas`, now using new torch api to calc eigenvalue.  
+Fix bug in `tcet`, add net instance deep copy to avoid weight changes, add manually designed `tcet` copy process, remove bn in synflow, add bn in snip.
+- V1.1.0  
+Add `tcet` metric, which calculates TCET score.
+Add `snr` metrics, which calculates SNR family scores.
 - V1.0.10  
 add `zico` metric, which calculates ZICO score.  
 - V1.0.9  

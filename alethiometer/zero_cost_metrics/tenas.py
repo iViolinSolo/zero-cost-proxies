@@ -1,10 +1,10 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-28 17:26:50
-LastEditTime: 2023-04-28 23:15:23
+LastEditTime: 2023-05-04 12:20:27
 LastEditors: ViolinSolo
 Description: TENAS score computation
-FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/tenas.py
+FilePath: /zero-cost-test/home/u2280887/GitHub/zero-cost-proxies/alethiometer/zero_cost_metrics/tenas.py
 '''
 '''
 Copyright (C) 2010-2021 Alibaba Group Holding Limited.
@@ -292,7 +292,19 @@ def get_ntk_n(networks, recalbn=0, train_mode=False, num_batch=None,
     ntks = [torch.einsum('nc,mc->nm', [_grads, _grads]) for _grads in grads]
     conds = []
     for ntk in ntks:
-        eigenvalues, _ = torch.symeig(ntk)  # ascending
+        # eigenvalues, _ = torch.symeig(ntk)  # ascending
+        """ using following code to replace torch.symeig, because of the following warning:
+        UserWarning: torch.symeig is deprecated in favor of torch.linalg.eigh and will be removed in a future PyTorch release.
+        The default behavior has changed from using the upper triangular portion of the matrix by default to using the lower triangular portion.
+        L, _ = torch.symeig(A, upper=upper)
+        should be replaced with
+        L = torch.linalg.eigvalsh(A, UPLO='U' if upper else 'L')
+        and
+        L, V = torch.symeig(A, eigenvectors=True)
+        should be replaced with
+        L, V = torch.linalg.eigh(A, UPLO='U' if upper else 'L')
+        """
+        eigenvalues = torch.linalg.eigvalsh(ntk, UPLO='U') # ascending
         # conds.append(np.nan_to_num((eigenvalues[-1] / eigenvalues[0]).item(), copy=True, nan=100000.0))
         conds.append(np.nan_to_num((eigenvalues[-1] / eigenvalues[0]).item(), copy=True))
     return conds
