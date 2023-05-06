@@ -1,10 +1,10 @@
 '''
 Author: ViolinSolo
 Date: 2023-04-28 17:26:50
-LastEditTime: 2023-05-04 12:20:27
+LastEditTime: 2023-05-06 10:22:37
 LastEditors: ViolinSolo
 Description: TENAS score computation
-FilePath: /zero-cost-test/home/u2280887/GitHub/zero-cost-proxies/alethiometer/zero_cost_metrics/tenas.py
+FilePath: /zero-cost-proxies/alethiometer/zero_cost_metrics/tenas.py
 '''
 '''
 Copyright (C) 2010-2021 Alibaba Group Holding Limited.
@@ -19,6 +19,7 @@ https://github.com/idstcv/ZenNAS/blob/main/ZeroShotProxy/compute_te_nas_score.py
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import argparse
+import gc
 import time
 import torch
 from torch import nn
@@ -329,11 +330,21 @@ def compute_NTK_score(net: nn.Module, inputs, targets, split_data=1, loss_fn=Non
 #  TENAS score computation: tenas part
 # =============================================================================
 
-@metric('tenas', bn=True, num_batch=1)
+@metric('tenas', bn=True, num_batch=1, bn_shadow=True)
 def compute_TENAS_score(net: nn.Module, inputs, targets, split_data=1, loss_fn=None,  # these are necessary arguments limited by *zero_cost_metrics.__init__.calc_metric*, if you want to add more arguments, modify @metric decorator's parameters to provide dynamic default values.
-                     num_batch=None): # additional arguments
-    ntk = compute_NTK_score(net, inputs, targets, split_data, loss_fn, num_batch)
-    RN = compute_RN_score(net, inputs, targets, split_data, loss_fn, num_batch)
+                     num_batch=None, bn_shadow=True): # additional arguments
+    net1 = net.get_prunable_copy(bn=bn_shadow)  # manually keep bn in lnwot, and remove bn in synflow
+    ntk = compute_NTK_score(net1, inputs, targets, split_data, loss_fn, num_batch)
+    del net1
+    torch.cuda.empty_cache()
+    gc.collect()
+
+    net2 = net.get_prunable_copy(bn=bn_shadow)  # manually keep bn in lnwot, and remove bn in synflow
+    RN = compute_RN_score(net2, inputs, targets, split_data, loss_fn, num_batch)
+    del net2
+    torch.cuda.empty_cache()
+    gc.collect()
+
     the_score = ntk + RN
     return the_score
 

@@ -1,7 +1,7 @@
 <!--
  * @Author: ViolinSolo
  * @Date: 2023-03-26 10:11:01
- * @LastEditTime: 2023-05-05 17:15:45
+ * @LastEditTime: 2023-05-06 10:28:20
  * @LastEditors: ViolinSolo
  * @Description: Readme
  * @FilePath: /zero-cost-proxies/README.md
@@ -49,6 +49,8 @@ Supported zc-metrics are:
 =     in order to calculate cross-batch (non-zero) std  =
 =-------------------------------------------------------=
 = tcet,                                                 =
+= snr-synflow,                                          =
+= snr-snip,                                             =
 =========================================================
 ```
 
@@ -90,6 +92,8 @@ source scripts/download_data.sh nb201 ImageNet16-120
 # do not use `bash`, use `source` instead
 ```
 ## 2. Versions
+- V1.1.2  
+Fix bug in `tenas`, add net instance deep copy to avoid weight changes.
 - V1.1.1  
 Fix warnings in `tenas`, now using new torch api to calc eigenvalue.  
 Fix bug in `tcet`, add net instance deep copy to avoid weight changes, add manually designed `tcet` copy process, remove bn in synflow, add bn in snip.
